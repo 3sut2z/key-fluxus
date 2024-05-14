@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Key Fluxus</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 20px;
+            background-image: url('background.jpg'); /* Đường dẫn đến hình nền */
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+        .widget {
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .left-widget {
+            width: 450px;
+            padding: 20px;
+        }
+        .center-widget {
+            display: none;
+        }
+        .widget-header {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .widget-key {
+            font-size: 18px;
+            color: #333;
+            margin-top: 20px;
+            word-wrap: break-word;
+        }
+        .widget-key strong {
+            font-weight: bold;
+        }
+        .get-key-btn {
+            display: block;
+            margin-top: 20px;
+            padding: 15px 30px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 18px;
+            background-color: #007bff; /* Màu xanh dương */
+            transition: background-color 0.3s ease;
+        }
+        .get-key-btn.enabled {
+            background-color: #007bff; /* Màu xanh dương */
+        }
+        .progress-bar-container {
+            margin-top: 20px;
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        .progress-bar {
+            height: 20px;
+            width: 0;
+            background-color: #76c7c0;
+            border-radius: 10px;
+            transition: width 0.4s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        .progress-bar-text {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            top: 0;
+            left: 0;
+            height: 20px;
+            line-height: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Widget ở bên trái để lấy key -->
+    <div class="widget left-widget">
+        <div class="widget-header">Get Your API Key</div>
+        <button class="get-key-btn disabled" id="getKeyBtn">Get Key</button>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+            <div class="progress-bar-text" id="progressBarText">0%</div>
+        </div>
+        <div class="widget-key" id="currentKey"><strong>Your Key:</strong> Press "Get Key" to retrieve a key</div>
+        <div class="widget-key" id="expiryInfo"></div>
+    </div>
+
+    <script>
+        // Function to generate a random 32-character key
+        function generateKey() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let key = '';
+            for (let i = 0; i < 32; i++) {
+                key += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return key;
+        }
+
+        // Function to handle key fetching and display
+        function fetchKey() {
+            const progressBar = document.getElementById('progressBar');
+            const progressBarText = document.getElementById('progressBarText');
+            const currentKeyElement = document.getElementById('currentKey');
+            const expiryInfoElement = document.getElementById('expiryInfo');
+
+            // Reset progress bar
+            progressBar.style.width = '0%';
+            progressBarText.textContent = '0%';
+            currentKeyElement.textContent = 'Generating key...';
+            expiryInfoElement.textContent = ''; // Reset expiry info
+
+            let width = 0;
+            const interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                    const key = generateKey();
+
+                    // Display the current key
+                    currentKeyElement.innerHTML = `<strong>Your Key:</strong> ${key}`;
+
+                    // Calculate expiry time (24 hours from now)
+                    const expiryDate = new Date();
+                    expiryDate.setTime(expiryDate.getTime() + (24 * 60 * 60 * 1000)); // Add 24 hours
+                    const expiryTimeString = expiryDate.toLocaleString();
+                    expiryInfoElement.textContent = `This key will expire on ${expiryTimeString}`;
+
+                    // Update progress bar text to "Done!"
+                    progressBarText.textContent = 'Done!';
+                } else {
+                    width += 1;
+                    progressBar.style.width = width + '%';
+                    progressBarText.textContent = width + '%';
+                }
+            }, 30); // Increase width every 30ms to simulate progress
+        }
+
+        // Add event listener to the button
+        document.getElementById('getKeyBtn').addEventListener('click', fetchKey);
+    </script>
+</body>
+</html>
